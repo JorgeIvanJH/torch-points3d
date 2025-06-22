@@ -7,7 +7,7 @@ defaults: # for loading the default.yaml config
 #
   - debugging: default
   - models: ???
-  - data: ???
+  # - data: ???
   - sota # Contains current SOTA results on different datasets (extracted from papers !).
 #  - hydra/job_logging: custom
 #  - hydra/output: custom  # add the support for user-defined experiment folder (where to save the experiment files)

@@ -1,0 +1,34 @@
+# Core DL stack (compatible with torch 2.1.0 + CUDA 11.8)
+torch==2.1.0
+torchvision
+torch-geometric==2.3.1
+torch-scatter==2.1.2
+torch-sparse==0.6.18
+torch-cluster==1.6.3
+torch-points-kernels==0.7.0
+
+# PyG wheel install fallback (used manually later if needed)
+# -f https://data.pyg.org/whl/torch-2.1.0+cu118.html
+
+# Hydra & config system (recommended for torch-points3d)
+hydra-core==1.1.0
+omegaconf==2.1.1
+
+# Datasets & utilities
+scikit-learn==1.2.2
+pandas
+matplotlib
+open3d==0.17.0
+plyfile
+h5py
+pyyaml
+tqdm
+wandb
+gdown
+visdom
+
+# Others (safe)
+addict
+joblib
+numpy==1.19.5
+protobuf<4

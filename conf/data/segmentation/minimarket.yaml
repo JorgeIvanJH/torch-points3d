@@ -1,0 +1,34 @@
+# @package data
+task: segmentation
+class: minimarket.MiniMarketDataset
+dataroot: data
+first_subsampling: 0.04
+use_category: False
+
+train_transforms:
+  - transform: XYZFeature
+    params:
+      add_x: False
+      add_y: False
+      add_z: True
+  - transform: AddFeatsByKeys
+    params:
+      list_add_to_x: [True, True]
+      feat_names: [rgb, pos_z]
+      delete_feats: [True, True]
+  - transform: Center
+
+test_transform:
+  - transform: XYZFeature
+    params:
+      add_x: False
+      add_y: False
+      add_z: True
+  - transform: AddFeatsByKeys
+    params:
+      list_add_to_x: [True, True]
+      feat_names: [rgb, pos_z]
+      delete_feats: [True, True]
+  - transform: Center
+
+val_transform: ${data.test_transform}
