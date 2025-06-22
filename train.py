@@ -20,3 +20,6 @@ def main(cfg):
 
 if __name__ == "__main__":
     main()
+
+
+# poetry run python train.py

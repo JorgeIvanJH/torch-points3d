@@ -1,4 +1,4 @@
-from torch_geometric.nn import PointConv
+from torch_geometric.nn.conv import PointConv
 
 from torch_points3d.core.base_conv.base_conv import *
 from torch_points3d.core.base_conv.message_passing import *

@@ -221,7 +221,8 @@ class Trainer:
                     iter_data_time = time.time()
 
                     if self.pytorch_profiler_log:
-                        prof.step()
+                        pass
+                        # prof.step()
 
                     if self.early_break:
                         break

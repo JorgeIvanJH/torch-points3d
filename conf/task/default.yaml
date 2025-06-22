@@ -1,7 +1,7 @@
 # @package task
-defaults:
-  - /data@_group_: default
-  - /models@_group_: default
+# defaults:
+#   - /data@_group_: default
+#   - /models@_group_: default
 
 # By default.yaml we turn off recursive instantiation, allowing the user to instantiate themselves at the appropriate times.
 _recursive_: false

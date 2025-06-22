@@ -3,3 +3,4 @@ find_neighbour_dist: False
 num_batches: 50
 early_break: False
 profiling: False
+profiler: False

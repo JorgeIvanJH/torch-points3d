@@ -3,6 +3,7 @@ activate: False
 format: ["ply", "tensorboard"]
 num_samples_per_epoch: 10
 deterministic: True # False -> Randomly sample elements from epoch to epoch
+deterministic_seed: 0
 saved_keys:
   pos: [['x', 'float'], ['y', 'float'], ['z', 'float']]
   y: [['l', 'float']]
