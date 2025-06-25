@@ -22,7 +22,8 @@ class RandlaKernel(MessagePassing):
         self.global_nn = MLP(global_nn)
 
     def forward(self, x, pos, edge_index):
-        x = self.propagate(edge_index, x=x, pos=pos)
+        pos_i, pos_j = pos
+        x = self.propagate(edge_index, x=x, pos=(pos_j, pos_i), size=(pos_j.size(0), pos_i.size(0)))
         return x
 
     def message(self, x_j, pos_i, pos_j):
