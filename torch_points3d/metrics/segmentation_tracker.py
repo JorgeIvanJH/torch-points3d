@@ -86,7 +86,7 @@ class SegmentationTracker(BaseTracker):
         self._macc = 100 * self._confusion_matrix.get_mean_class_accuracy()
         self._miou = 100 * self._confusion_matrix.get_average_intersection_union()
         self._iou_per_class = {
-            i: "{:.2f}".format(100 * v)
+            i: 100 * v
             for i, v in enumerate(self._confusion_matrix.get_intersection_union_per_class()[0])
         }
 
@@ -107,7 +107,17 @@ class SegmentationTracker(BaseTracker):
         return self._metric_func
 
     def publish_to_wandb(self, metrics, epoch):
-        super().publish_to_wandb(metrics, epoch)
+        wandb_metrics = metrics.copy()
+        wandb_metrics["epoch"] = epoch
+
+        # Add per-class IoU to wandb_metrics
+        for class_id, iou_value in self._iou_per_class.items():
+            wandb_metrics[f"{self._stage}/IoU_class_{class_id}"] = iou_value
+
+        print(f"Publishing to wandb at epoch {epoch} with metrics: {wandb_metrics}")  # DEBUG
+
+        wandb.log(wandb_metrics)
+
 
         # write confusion matrix out to wandb
         # flatten cm indices
