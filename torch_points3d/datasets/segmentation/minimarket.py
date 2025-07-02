@@ -11,41 +11,45 @@ from torch_points3d.metrics.segmentation_tracker import SegmentationTracker
 
 
 class MiniMarketRawDataset(InMemoryDataset):
-    def __init__(self, root, split="train", transform=None, pre_transform=None, pre_filter=None):
+    def __init__(self, root, split="train", filename="minimarket.h5", transform=None, pre_transform=None, pre_filter=None):
         self.split = split
+        self.filename = filename
         super().__init__(root, transform, pre_transform, pre_filter)
-
         self.data, self.slices = torch.load(self.processed_paths[self._split_index(split)])
-    
+        print("filename: ", self.filename)
     def _split_index(self, split):
         mapping = {"train": 0, "val": 1, "test": 2}
         return mapping[split]
 
     @property
     def processed_file_names(self):
-        return ["train.pt", "val.pt", "test.pt"]
+        base = os.path.splitext(self.filename)[0]
+        return [f"{base}_train.pt", f"{base}_val.pt", f"{base}_test.pt"]
 
     @property
     def raw_file_names(self):
-        return ['minimarket.h5']
+        return [self.filename]
 
     def download(self):
         # No download, the file should already be in place
         pass
 
     def process(self):
-        path = os.path.join(self.raw_dir, 'minimarket.h5')
+        path = os.path.join(self.raw_dir, self.filename)
+        print(f"Processing {self.split} dataset from {path}")
+        breakpoint()  # For debugging purposes, you can remove this line later
         with h5py.File(path, 'r') as f:
             seg_points = f['seg_points'][:]
             seg_colors = f['seg_colors'][:]
             seg_labels = f['seg_labels'][:]
+
 
         data_list = []
         for i in range(seg_points.shape[0]):
             pos = torch.tensor(seg_points[i], dtype=torch.float)
             rgb = torch.tensor(seg_colors[i], dtype=torch.float) / 255.0
             labels = torch.tensor(np.argmax(seg_labels[i], axis=-1), dtype=torch.long)
-            data = Data(pos=pos, x=rgb, y=labels)
+            data = Data(pos=pos, rgb=rgb, y=labels)
 
             if self.pre_filter is not None and not self.pre_filter(data):
                 continue
@@ -67,19 +71,19 @@ class MiniMarketDataset(BaseDataset):
         super().__init__(dataset_opt)
 
         self.train_dataset = MiniMarketRawDataset(
-            self._data_path, split="train",
+            self._data_path, split="train", filename="minimarket.h5",
             pre_transform=self.pre_transform,
             transform=self.train_transform
         )
 
         self.val_dataset = MiniMarketRawDataset(
-            self._data_path, split="val",
+            self._data_path, split="val", filename="minimarket_validtest.h5",
             pre_transform=self.pre_transform,
             transform=self.val_transform
         )
 
-        self.test_dataset = MiniMarketRawDataset( # Can change to a different .h5 file if needed
-            self._data_path, split="test",
+        self.test_dataset = MiniMarketRawDataset(
+            self._data_path, split="test", filename="minimarket_validtest.h5",
             pre_transform=self.pre_transform,
             transform=self.test_transform
         )
