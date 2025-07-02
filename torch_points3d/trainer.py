@@ -216,13 +216,13 @@ class Trainer:
                         )
 
                         if self._visualizer.is_active:
+                            print("Saving visuals")
                             self._visualizer.save_visuals(self._model.get_current_visuals())
 
                     iter_data_time = time.time()
 
                     if self.pytorch_profiler_log:
-                        pass
-                        # prof.step()
+                        prof.step()
 
                     if self.early_break:
                         break

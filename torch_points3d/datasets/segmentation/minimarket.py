@@ -45,7 +45,7 @@ class MiniMarketRawDataset(InMemoryDataset):
             pos = torch.tensor(seg_points[i], dtype=torch.float)
             rgb = torch.tensor(seg_colors[i], dtype=torch.float) / 255.0
             labels = torch.tensor(np.argmax(seg_labels[i], axis=-1), dtype=torch.long)
-            data = Data(pos=pos, rgb=rgb, y=labels)
+            data = Data(pos=pos, x=rgb, y=labels)
 
             if self.pre_filter is not None and not self.pre_filter(data):
                 continue
@@ -78,11 +78,14 @@ class MiniMarketDataset(BaseDataset):
             transform=self.val_transform
         )
 
-        self.test_dataset = MiniMarketRawDataset(
+        self.test_dataset = MiniMarketRawDataset( # Can change to a different .h5 file if needed
             self._data_path, split="test",
             pre_transform=self.pre_transform,
             transform=self.test_transform
         )
+        if dataset_opt.class_weight_method:
+            self.add_weights(class_weight_method=dataset_opt.class_weight_method)
+
 
     def get_tracker(self, wandb_log: bool, tensorboard_log: bool):
         return SegmentationTracker(self, wandb_log=wandb_log, use_tensorboard=tensorboard_log)

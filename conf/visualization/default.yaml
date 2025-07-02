@@ -1,8 +1,8 @@
 # @package _group_
-activate: False
-format: ["ply", "tensorboard"]
-num_samples_per_epoch: 10
-deterministic: True # False -> Randomly sample elements from epoch to epoch
+activate: True # set to False to disable visualization
+format: ["wandb"] # also supported: ["ply", "tensorboard"]
+num_samples_per_epoch: 4
+deterministic: False # False -> Randomly sample elements from epoch to epoch
 deterministic_seed: 0
 saved_keys:
   pos: [['x', 'float'], ['y', 'float'], ['z', 'float']]
@@ -12,3 +12,7 @@ ply_format: 'binary_big_endian'
 tensorboard_mesh:
   label: 'y'
   prediction: 'pred'
+wandb_max_points: 20480
+wandb_cmap:
+  - [0, 255, 0] # class 0
+  - [255, 0, 0] # class 1

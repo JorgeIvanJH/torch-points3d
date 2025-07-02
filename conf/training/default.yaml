@@ -2,7 +2,7 @@
 # Those arguments defines the training hyper-parameters
 epochs: 100
 num_workers: 6
-batch_size: 3
+batch_size: 4
 shuffle: True
 cuda: 0 # -1 -> no cuda otherwise takes the specified index
 precompute_multi_scale: False # Compute multiscate features on cpu for faster training / inference
@@ -29,7 +29,7 @@ checkpoint_dir: ""
 # Those arguments within experiment defines which model, dataset and task to be created for benchmarking
 # parameters for Weights and Biases
 wandb:
-  entity: ""
+  entity: jorgejh
   project: default
   log: True
   notes:
@@ -42,7 +42,7 @@ wandb:
 tensorboard:
   log: True
   pytorch_profiler:
-    log: True # activate PyTorch Profiler in TensorBoard
+    log: False # activate PyTorch Profiler in TensorBoard
     nb_epoch: 3 # number of epochs to profile (0 -> all).
     skip_first: 10 # number of first iterations to skip.
     wait: 5 # number of iterations where the profiler is disable.
