@@ -37,12 +37,11 @@ class MiniMarketRawDataset(InMemoryDataset):
     def process(self):
         path = os.path.join(self.raw_dir, self.filename)
         print(f"Processing {self.split} dataset from {path}")
-        breakpoint()  # For debugging purposes, you can remove this line later
+
         with h5py.File(path, 'r') as f:
             seg_points = f['seg_points'][:]
             seg_colors = f['seg_colors'][:]
             seg_labels = f['seg_labels'][:]
-
 
         data_list = []
         for i in range(seg_points.shape[0]):
@@ -59,11 +58,16 @@ class MiniMarketRawDataset(InMemoryDataset):
             data_list.append(data)
 
         total = len(data_list)
-        train_end = int(0.7 * total)
-        val_end = int(0.85 * total)
-        torch.save(self.collate(data_list[:train_end]), self.processed_paths[0])
-        torch.save(self.collate(data_list[train_end:val_end]), self.processed_paths[1])
-        torch.save(self.collate(data_list[val_end:]), self.processed_paths[2])
+
+        if self.filename == "minimarket_train.h5":
+            # Use **100% for training**
+            torch.save(self.collate(data_list), self.processed_paths[0])
+        elif self.filename == "minimarket_validtest.h5":
+            # Split into **50% validation + 50% testing**
+            mid = total // 2
+            torch.save(self.collate(data_list[:mid]), self.processed_paths[1])  # validation
+            torch.save(self.collate(data_list[mid:]), self.processed_paths[2])  # test
+
 
 
 class MiniMarketDataset(BaseDataset):
@@ -71,7 +75,7 @@ class MiniMarketDataset(BaseDataset):
         super().__init__(dataset_opt)
 
         self.train_dataset = MiniMarketRawDataset(
-            self._data_path, split="train", filename="minimarket.h5",
+            self._data_path, split="train", filename="minimarket_train.h5",
             pre_transform=self.pre_transform,
             transform=self.train_transform
         )

@@ -30,7 +30,7 @@ checkpoint_dir: ""
 # parameters for Weights and Biases
 wandb:
   entity: jorgejh
-  project: default
+  project: pc_seg_2048ppo_10obj_1or # Options: pc_seg_<points per object>ppo_<number of objects in scene>obj_<number of orientation transforms>or
   log: True
   notes:
   name:
