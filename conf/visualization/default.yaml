@@ -1,7 +1,7 @@
 # @package _group_
 activate: True # set to False to disable visualization
 format: ["wandb"] # also supported: ["ply", "tensorboard"]
-num_samples_per_epoch: 4
+num_samples_per_epoch: 2
 deterministic: False # False -> Randomly sample elements from epoch to epoch
 deterministic_seed: 0
 saved_keys:

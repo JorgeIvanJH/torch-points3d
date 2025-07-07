@@ -3,7 +3,7 @@
 epochs: 100
 num_workers: 6
 batch_size: 4
-shuffle: True
+shuffle: False
 cuda: 0 # -1 -> no cuda otherwise takes the specified index
 precompute_multi_scale: False # Compute multiscate features on cpu for faster training / inference
 optim:
@@ -33,7 +33,7 @@ wandb:
   project: pc_seg_2048ppo_10obj_1or # Options: pc_seg_<points per object>ppo_<number of objects in scene>obj_<number of orientation transforms>or
   log: True
   notes:
-  name:
+  name: ${model_name}
   public: True # It will be display the model within wandb log, else not.
   config:
     model_name: ${model_name}

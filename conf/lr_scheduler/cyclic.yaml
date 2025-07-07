@@ -3,3 +3,4 @@ class: CyclicLR
 params:
   base_lr: ${training.optim.base_lr}
   max_lr: 0.1
+  cycle_momentum: False
