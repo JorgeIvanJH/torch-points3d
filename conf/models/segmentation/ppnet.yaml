@@ -8,7 +8,7 @@ PPNet:
     in_grid_size: ${data.first_subsampling}
     in_feat: 72
     bn_momentum: 0.01
-    position_embedding: 'sin_cos'
+    position_embedding: 'xyz' # or sin_cos
     reduction: 'avg'
     output_conv: False
     bottleneck_ratio: 2
