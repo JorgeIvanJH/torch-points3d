@@ -29,9 +29,9 @@ from viz_utils import visualize_segmentation
 BASEDIR = os.path.dirname(os.getcwd())
 sys.path.append(BASEDIR)
 
-file_path = "/home/segment1/jorge/torch-points3d/data/minimarket/raw/minimarket_train.h5"
-checkpoint_path = "/home/segment1/jorge/torch-points3d/outputs/2025-07-09/21-28-58"
-config_path = "/home/segment1/jorge/torch-points3d/outputs/2025-07-09/21-28-58/.hydra"
+
+checkpoint_path = "/home/segment1/jorge/torch-points3d/outputs/2025-07-22/23-15-04"
+config_path = checkpoint_path+"/.hydra"
 
 
 
@@ -45,7 +45,6 @@ def main(cfg):
         raise ValueError("CUDA is not available or not set correctly in the config.")
     cfg.training.batch_size = 1
     cfg.training.checkpoint_dir = checkpoint_path
-    breakpoint()
     checkpoint: ModelCheckpoint = ModelCheckpoint(
             cfg.training.checkpoint_dir,
             cfg.model_name,
@@ -73,8 +72,6 @@ def main(cfg):
                 model.set_input(data, device)
                 model.forward(data)
                 visualize_segmentation(model, i)
-                breakpoint()
-                model.backward()
 
             
 
