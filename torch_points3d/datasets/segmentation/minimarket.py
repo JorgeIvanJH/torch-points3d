@@ -43,6 +43,14 @@ class MiniMarketRawDataset(InMemoryDataset):
             seg_colors = f['seg_colors'][:]
             seg_labels = f['seg_labels'][:]
 
+        # # Subsamplin IN CASE NECESSARY
+        # num_points = seg_points.shape[1]
+        # num_keep = int(num_points * 0.5)
+        # idx = np.sort(np.random.choice(num_points, num_keep, replace=False))
+        # seg_points = seg_points[:, idx, :]
+        # seg_colors = seg_colors[:, idx, :]
+        # seg_labels = seg_labels[:, idx, :]
+
         data_list = []
         for i in range(seg_points.shape[0]):
             pos = torch.tensor(seg_points[i], dtype=torch.float)
