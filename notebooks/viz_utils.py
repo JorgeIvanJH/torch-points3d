@@ -32,7 +32,7 @@ def rotate_point_cloud(points, axis='z', angle_deg=90):
     return rotated_points
 
 
-def visualize_segmentation(model, i):
+def visualize_segmentation(model, i, iou_scores):
     # Extract data for visualization
     points = model.data_visual.pos.detach().cpu().numpy()
     points = rotate_point_cloud(points, axis='x', angle_deg=200)
@@ -71,7 +71,7 @@ def visualize_segmentation(model, i):
 
     # Predicted segmentation visualization
     ax2 = fig.add_subplot(122, projection='3d')
-    ax2.set_title("Predicted Segmentation")
+    ax2.set_title(f"Predicted Segmentation (IoU class 0: {iou_scores[0]:.2f} IoU class 1: {iou_scores[1]:.2f})")
     ax2.scatter(points[:, 0], points[:, 1], points[:, 2], c=colors, s=1)  # Scatter with segmentation colors
     ax2.axis("off")
 

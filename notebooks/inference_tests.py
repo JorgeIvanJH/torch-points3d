@@ -30,7 +30,7 @@ BASEDIR = os.path.dirname(os.getcwd())
 sys.path.append(BASEDIR)
 
 
-checkpoint_path = "/home/segment1/jorge/torch-points3d/outputs/2025-07-22/23-15-04"
+checkpoint_path = "/home/segment1/jorge/torch-points3d/outputs/saved_models/w_test_data_distribution/rs_conv"
 config_path = checkpoint_path+"/.hydra"
 
 
@@ -61,6 +61,8 @@ def main(cfg):
             cfg.training.num_workers,
             cfg.training.precompute_multi_scale,
         )
+    tracker = dataset.get_tracker(getattr(cfg.training, "wandb", False),getattr(cfg.training.tensorboard, "pytorch_profiler", False))
+    tracker.reset("train")
     model.verify_data(dataset.train_dataset[0])
     model = model.to(device)
     model.eval()
@@ -71,7 +73,10 @@ def main(cfg):
                 data.to(device)
                 model.set_input(data, device)
                 model.forward(data)
-                visualize_segmentation(model, i)
+                tracker.track(model, data=data, **cfg.get("tracker_options", {}))
+                metrics = tracker.get_metrics(verbose=True)
+                visualize_segmentation(model, i, metrics["train_iou_per_class"])
+
 
             
 
