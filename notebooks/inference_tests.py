@@ -66,7 +66,7 @@ def main(cfg):
     model.verify_data(dataset.train_dataset[0])
     model = model.to(device)
     model.eval()
-    test_loader = dataset.test_dataloaders[0]
+    test_loader = dataset.train_dataloader # PUT THE VALIDATION DATASET AS THE TRAINING IN "torch-points3d/notebooks/data/minimarket/raw"
     with torch.no_grad():
         with tqdm(test_loader) as tq_test_loader:
             for i, data in enumerate(tq_test_loader):
