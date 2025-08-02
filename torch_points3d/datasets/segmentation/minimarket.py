@@ -68,20 +68,18 @@ class MiniMarketRawDataset(InMemoryDataset):
         total = len(data_list)
 
         if self.filename == "minimarket_train.h5":
-            # Use **100% for training**
             torch.save(self.collate(data_list), self.processed_paths[0])
-        elif self.filename == "minimarket_validtest.h5":
-            # Split into **50% validation + 50% testing**
-            mid = total // 2
-            torch.save(self.collate(data_list[:mid]), self.processed_paths[1])  # validation
-            torch.save(self.collate(data_list[mid:]), self.processed_paths[2])  # test
-
+        elif self.filename == "minimarket_valid.h5":
+            torch.save(self.collate(data_list), self.processed_paths[1])  # validation
+        elif self.filename == "minimarket_test.h5":
+            torch.save(self.collate(data_list), self.processed_paths[2])  # test
 
 
 class MiniMarketDataset(BaseDataset):
     def __init__(self, dataset_opt):
         super().__init__(dataset_opt)
 
+        # Separate files for training, validation, and testing
         self.train_dataset = MiniMarketRawDataset(
             self._data_path, split="train", filename="minimarket_train.h5",
             pre_transform=self.pre_transform,
@@ -89,13 +87,13 @@ class MiniMarketDataset(BaseDataset):
         )
 
         self.val_dataset = MiniMarketRawDataset(
-            self._data_path, split="val", filename="minimarket_validtest.h5",
+            self._data_path, split="val", filename="minimarket_valid.h5",  # Changed here
             pre_transform=self.pre_transform,
             transform=self.val_transform
         )
 
         self.test_dataset = MiniMarketRawDataset(
-            self._data_path, split="test", filename="minimarket_validtest.h5",
+            self._data_path, split="test", filename="minimarket_test.h5",  # Changed here
             pre_transform=self.pre_transform,
             transform=self.test_transform
         )
