@@ -2,7 +2,7 @@
 task: segmentation
 class: minimarket.MiniMarketDataset
 dataroot: data
-first_subsampling: 0.04
+first_subsampling: 0.01
 use_category: False
 class_weight_method:  # options: "log", "sqrt", none
 
