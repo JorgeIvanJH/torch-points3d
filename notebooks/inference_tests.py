@@ -23,6 +23,7 @@ from torch_points3d.trainer import Trainer
 import pyvista as pv
 from tqdm.auto import tqdm
 from viz_utils import visualize_segmentation
+import time
 
 
 # === Paths ===
@@ -30,7 +31,7 @@ BASEDIR = os.path.dirname(os.getcwd())
 sys.path.append(BASEDIR)
 
 
-checkpoint_path = "/home/segment1/jorge/torch-points3d/outputs/saved_models/w_test_data_distribution/rs_conv"
+checkpoint_path = "/home/segment1/jorge/torch-points3d/outputs/saved_models/w_test_data_distribution/pointnet"
 config_path = checkpoint_path+"/.hydra"
 
 
@@ -69,14 +70,22 @@ def main(cfg):
     test_loader = dataset.train_dataloader # PUT THE VALIDATION DATASET AS THE TRAINING IN "torch-points3d/notebooks/data/minimarket/raw"
     with torch.no_grad():
         with tqdm(test_loader) as tq_test_loader:
+            times_list = []
             for i, data in enumerate(tq_test_loader):
+                
                 data.to(device)
                 model.set_input(data, device)
+                time_init = time.time()
                 model.forward(data)
+                time_elapsed = time.time() - time_init
                 tracker.track(model, data=data, **cfg.get("tracker_options", {}))
                 metrics = tracker.get_metrics(verbose=True)
                 visualize_segmentation(model, i, metrics["train_iou_per_class"])
-
+                times_list.append(time_elapsed)
+            average_time = sum(times_list) / len(times_list)
+            print("times_list: ", times_list)
+            print(f"Average inference time per sample: {average_time:.4f} seconds")
+            
 
             
 

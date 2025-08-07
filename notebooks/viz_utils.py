@@ -36,7 +36,7 @@ def visualize_segmentation(model, i, iou_scores):
     # Extract data for visualization
     points = model.data_visual.pos.detach().cpu().numpy()
     points = rotate_point_cloud(points, axis='x', angle_deg=200)
-    points = rotate_point_cloud(points, axis='y', angle_deg=45)
+    points = rotate_point_cloud(points, axis='y', angle_deg=15)
     preds = model.data_visual.pred.detach().cpu().numpy()
 
     # Original input RGB colors (normalize if needed)
@@ -56,9 +56,9 @@ def visualize_segmentation(model, i, iou_scores):
     colors[preds == 1] = [1, 0, 0] # Red for class 1
 
     # Plot side by side
-    points = points.transpose(0, 1, 2)[0]
-    rgb_viz = rgb_viz.transpose(0, 2, 1)[0]*255
-    colors = colors.transpose(0, 1, 2)[0]
+    points = points.transpose(0, 1, 2)[0] if points.ndim == 3 else points
+    rgb_viz = rgb_viz.transpose(0, 2, 1)[0]*255 if rgb_viz.ndim == 3 else rgb_viz*255
+    colors = colors.transpose(0, 1, 2)[0] if colors.ndim == 3 else colors
     fig = plt.figure(figsize=(14, 6))
     # print("points shape:", points.shape)
     # print("rgb_viz shape:", rgb_viz.shape)
