@@ -31,7 +31,7 @@ BASEDIR = os.path.dirname(os.getcwd())
 sys.path.append(BASEDIR)
 
 
-checkpoint_path = "/home/segment1/jorge/torch-points3d/outputs/saved_models/w_test_data_distribution/pointnet"
+checkpoint_path = "/home/segment1/jorge/torch-points3d/outputs/saved_models/w_test_data_distribution/ppnet"
 config_path = checkpoint_path+"/.hydra"
 
 
@@ -46,6 +46,7 @@ def main(cfg):
         raise ValueError("CUDA is not available or not set correctly in the config.")
     cfg.training.batch_size = 1
     cfg.training.checkpoint_dir = checkpoint_path
+    cfg.training.shuffle = False
     checkpoint: ModelCheckpoint = ModelCheckpoint(
             cfg.training.checkpoint_dir,
             cfg.model_name,

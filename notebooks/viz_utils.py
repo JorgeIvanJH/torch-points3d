@@ -33,51 +33,63 @@ def rotate_point_cloud(points, axis='z', angle_deg=90):
 
 
 def visualize_segmentation(model, i, iou_scores):
-    # Extract data for visualization
+    # Extract and rotate point coordinates
     points = model.data_visual.pos.detach().cpu().numpy()
     points = rotate_point_cloud(points, axis='x', angle_deg=200)
     points = rotate_point_cloud(points, axis='y', angle_deg=15)
-    preds = model.data_visual.pred.detach().cpu().numpy()
 
-    # Original input RGB colors (normalize if needed)
+    # Predicted labels
+    preds = model.data_visual.pred.detach().cpu().numpy()
+    # Ground truth labels
+    gt_labels = model.data_visual.y.detach().cpu().numpy()
+
+    # Input RGB colors
     if hasattr(model.data_visual, "x") and model.data_visual.x is not None and model.data_visual.x.shape[1] >= 3:
         rgb = model.data_visual.x[:, :3].detach().cpu().numpy()
-        if rgb.max() > 1.0:
-            rgb_viz = rgb / 255.0
-        else:
-            rgb_viz = rgb
+        rgb_viz = rgb / 255.0 if rgb.max() > 1.0 else rgb
     else:
         print("[WARNING] No valid RGB found in model.data_visual.x, using gray color.")
         rgb_viz = np.ones_like(points) * 0.5
 
-    # Predicted segmentation colors: class 0 = red, class 1 = green
-    colors = np.zeros_like(points)
-    colors[preds == 0] = [0, 1, 0] # Green for class 0
-    colors[preds == 1] = [1, 0, 0] # Red for class 1
+    # Visualization color maps
+    def get_segmentation_colors(labels):
+        colors = np.zeros_like(points)
+        colors[labels == 0] = [0, 1, 0]  # Green
+        colors[labels == 1] = [1, 0, 0]  # Red
+        return colors
+
+    pred_colors = get_segmentation_colors(preds)
+    gt_colors = get_segmentation_colors(gt_labels)
 
     # Plot side by side
-    points = points.transpose(0, 1, 2)[0] if points.ndim == 3 else points
+    pred_colors = pred_colors.transpose(0, 1, 2)[0] if pred_colors.ndim == 3 else pred_colors
     rgb_viz = rgb_viz.transpose(0, 2, 1)[0]*255 if rgb_viz.ndim == 3 else rgb_viz*255
-    colors = colors.transpose(0, 1, 2)[0] if colors.ndim == 3 else colors
-    fig = plt.figure(figsize=(14, 6))
-    # print("points shape:", points.shape)
-    # print("rgb_viz shape:", rgb_viz.shape)
-    # print("colors shape:", colors.shape)
-    # Original color visualization
+    gt_colors = gt_colors.transpose(0, 1, 2)[0] if gt_colors.ndim == 3 else gt_colors
+
+    # Clip colors
+    rgb_viz = np.clip(rgb_viz, 0, 1)
+    pred_colors = np.clip(pred_colors, 0, 1)
+    gt_colors = np.clip(gt_colors, 0, 1)
+
+    # Plot
+    fig = plt.figure(figsize=(18, 6))
+
     ax1 = fig.add_subplot(121, projection='3d')
     ax1.set_title("Original Colors")
     ax1.scatter(points[:, 0], points[:, 1], points[:, 2], c=rgb_viz, s=1)  # Scatter with RGB colors
     ax1.axis("off")
 
-    # Predicted segmentation visualization
-    ax2 = fig.add_subplot(122, projection='3d')
-    ax2.set_title(f"Predicted Segmentation (IoU class 0: {iou_scores[0]:.2f} IoU class 1: {iou_scores[1]:.2f})")
-    ax2.scatter(points[:, 0], points[:, 1], points[:, 2], c=colors, s=1)  # Scatter with segmentation colors
+    ax2 = fig.add_subplot(132, projection='3d')
+    ax2.set_title(f"Predicted Segmentation\nIoU class 0: {iou_scores[0]:.2f} | class 1: {iou_scores[1]:.2f}")
+    ax2.scatter(points[:, 0], points[:, 1], points[:, 2], c=pred_colors, s=1)
     ax2.axis("off")
 
-    plt.tight_layout()
+    ax3 = fig.add_subplot(133, projection='3d')
+    ax3.set_title("Ground Truth Labels")
+    ax3.scatter(points[:, 0], points[:, 1], points[:, 2], c=gt_colors, s=1)
+    ax3.axis("off")
 
-    # Save with a unique filename per batch
+    plt.tight_layout()
     save_path = f"segmentation_comparison_sample_{i}.png"
     plt.savefig(save_path, dpi=300)
     plt.close(fig)
