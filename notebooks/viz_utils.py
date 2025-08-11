@@ -65,6 +65,7 @@ def visualize_segmentation(model, i, iou_scores):
     pred_colors = pred_colors.transpose(0, 1, 2)[0] if pred_colors.ndim == 3 else pred_colors
     rgb_viz = rgb_viz.transpose(0, 2, 1)[0]*255 if rgb_viz.ndim == 3 else rgb_viz*255
     gt_colors = gt_colors.transpose(0, 1, 2)[0] if gt_colors.ndim == 3 else gt_colors
+    points = points.transpose(0, 1, 2)[0] if points.ndim == 3 else points
 
     # Clip colors
     rgb_viz = np.clip(rgb_viz, 0, 1)
