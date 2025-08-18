@@ -4,14 +4,14 @@ defaults:
   - lr_scheduler: exponential # Options: [cosine, cyclic, exponential, multi_step_reg, multi_step, plateau, poly_lr, step]
   - training: default
   - debugging: default
-  - models: segmentation/pointnet # Options: [_/pointnet, _/pointnet2, _/ppnet, _/kpconv, _/rsconv]
+  - models: segmentation/ppnet # Options: [_/pointnet, _/pointnet2, _/ppnet, _/kpconv, _/rsconv]
   - data: segmentation/minimarket
   - sota # Contains current SOTA results on different datasets (extracted from papers !).
 #  - hydra/job_logging: custom
 #  - hydra/output: custom  # add the support for user-defined experiment folder (where to save the experiment files)
 
 job_name: benchmark # prefix name for saving the experiment file.
-model_name: PointNet # Options: [PointNet, pointnet2_charlesssg, PPNet, KPConvPaper, RSConv_MSN]
+model_name: PPNet # Options: [PointNet, pointnet2ms, PPNet, KPConvPaper, RSConv_MSN]
 update_lr_scheduler_on: "on_epoch" # ["on_epoch", "on_num_batch", "on_num_sample"]
 selection_stage: ""
 pretty_print: True

@@ -30,10 +30,10 @@ checkpoint_dir: ""
 # parameters for Weights and Biases
 wandb:
   entity: jorgejh
-  project: W_TESTING_DISTRIBUTION # Options: <MODIFICATION>_pc_seg_<points per object>ppo_<number of objects in scene>obj_<number of orientation transforms>or
+  project: voxel_size_experimentation # Options: <MODIFICATION>_pc_seg_<points per object>ppo_<number of objects in scene>obj_<number of orientation transforms>or
   log: True
   notes:
-  name: ${model_name}
+  name: ${model_name}_0.2m
   public: True # It will be display the model within wandb log, else not.
   config:
     model_name: ${model_name}

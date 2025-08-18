@@ -31,7 +31,7 @@ BASEDIR = os.path.dirname(os.getcwd())
 sys.path.append(BASEDIR)
 
 
-checkpoint_path = "/home/segment1/jorge/torch-points3d/outputs/saved_models/w_test_data_distribution/ppnet"
+checkpoint_path = "/home/segment1/jorge/torch-points3d/outputs/saved_models/rsconv_experiment/RSConv_MSN_S3DIS"
 config_path = checkpoint_path+"/.hydra"
 
 
@@ -83,6 +83,8 @@ def main(cfg):
                 metrics = tracker.get_metrics(verbose=True)
                 visualize_segmentation(model, i, metrics["train_iou_per_class"])
                 times_list.append(time_elapsed)
+                if i == 10:
+                    break
             average_time = sum(times_list) / len(times_list)
             print("times_list: ", times_list)
             print(f"Average inference time per sample: {average_time:.4f} seconds")

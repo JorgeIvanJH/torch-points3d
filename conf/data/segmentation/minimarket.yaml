@@ -6,6 +6,11 @@ first_subsampling: 0.01
 use_category: False
 class_weight_method:  # options: "log", "sqrt", none
 
+# NEW voxelization options
+voxel_sizes: [0.02, 0.03]       # in meters — one or more sizes
+min_points_per_voxel: 64        # ignore very small voxels
+normalize_in_voxel: true        # shift coords to voxel-local frame
+
 train_transforms:
   - transform: XYZFeature
     params:
