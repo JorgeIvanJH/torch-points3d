@@ -1,3 +1,213 @@
+# Project Instructions
+
+Here I'll explain all relevant configurations, and execution processes to run the pointcloud experiments for the "Single Object Segmentation In Point Clouds" project by Jorge Ivan Jaramillo Herrera (s2739025). This file overides original information of the TorchPoints3D framework, I'm putting first the configuration and executing processes for my implementation, and at the end the original information that was in this .md file.
+
+# Standardised Installation Guide for MinkowskiEngine + TorchPoints3D
+
+The installation process of the **TorchPoints3D** framework was particularly challenging due to library incompatibility issues and the lack of recent official support from its original authors.  
+
+To ensure compatibility, the original `requirements.txt` had to be revised and cleaned, resulting in a new file named **`requirements_clean.txt`**.  
+
+The **MinkowskiEngine** was installed directly from its official repository to guarantee proper alignment with CUDA and PyTorch versions. Additionally, TorchPoints3D was not installed as a standard `pip` package; instead, it was executed directly from the root of its cloned repository.  
+
+This setup preserves the complete functionality of the framework, including support for the **MiniMarket dataset** developed for this project, as well as the associated experimentation and visualization code.
+
+## 1. Verify SUDO access and Nvidia GPU
+
+SUDO is required to modify cuda versioning, an NVidia GPU is mandatory to run Minkowski Engine, leveraged in the torchpoints3d for sparce matrix operations.
+
+```bash
+sudo whoami
+nvidia-smi
+```
+
+## 2. Install Miniconda
+
+```bash
+cd ~
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh
+source ~/.bashrc
+conda --version
+```
+
+## 3. Create Conda Environment
+
+```bash
+conda create -n minkowski python=3.8 -y
+conda activate minkowski
+which python
+python --version
+```
+
+## 4. CUDA Toolkit (11.8)
+
+Install CUDA 11.8 from NVIDIA’s runfile: https://developer.nvidia.com/cuda-11-8-0-download-archive?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=20.04&target_type=runfile_local  which as checked on 20/08/2025 was:
+
+```bash
+wget https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run
+sudo sh cuda_11.8.0_520.61.05_linux.run
+```
+Then:
+```bash
+export CUDA_HOME=/usr/local/cuda-11.8
+export PATH=$CUDA_HOME/bin:$PATH
+export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
+
+$CUDA_HOME/bin/nvcc --version
+```
+
+## 5. Install PyTorch with CUDA 11.8
+
+```bash
+pip install torch==2.1.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+```
+
+## 6. Install OpenBLAS (needed for Minkowski)
+
+```bash
+conda install openblas-devel -c anaconda
+```
+
+## 7. Build MinkowskiEngine
+
+```bash
+# Go to home (or wherever you keep projects)
+cd ~  
+
+# Clone MinkowskiEngine repository
+git clone https://github.com/NVIDIA/MinkowskiEngine.git
+cd MinkowskiEngine
+
+# Install with OpenBLAS + CUDA support
+python setup.py install \
+  --blas_include_dirs=${CONDA_PREFIX}/include \
+  --blas=openblas \
+  --force_cuda
+
+```
+
+## 8. Install TorchPoints3D
+
+```bash
+# Dependencies
+conda install openblas-devel -c anaconda
+pip install hydra-core==1.1 omegaconf==2.1.1 pyyaml
+
+# Get source
+git clone https://github.com/nicolas-chaulet/torch-points3d.git
+cd torch-points3d
+
+# Requirements (cleaned)
+pip install -r requirements_clean.txt
+```
+
+## 9. Fix Compatibility Issues
+
+```bash
+# Reinstall torch & geometric packages for CUDA 11.8
+pip uninstall torch torchvision torchaudio torch-scatter torch-sparse torch-cluster -y
+pip install torch==2.1.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
+# Install PyG extensions
+pip install torch-scatter torch-sparse torch-cluster torch-spline-conv \
+  -f https://data.pyg.org/whl/torch-2.1.0+cu118.html
+
+# Numba + LLVM fixes
+conda install -c conda-forge numba=0.56.4 llvmlite=0.39.1
+```
+
+# Dataset
+
+In my project, I ran multiple experiments both with artificial and real life scenes that were processed into HDF5 files, compatible to be read from the TorchPoints3D framework in the added support for the MiniMarket dataset. The support for this dataset, located at "torch-points3d/torch_points3d/datasets/segmentation/minimarket.py", following the configuration in "torch-points3d/conf/data/segmentation/minimarket.yaml", expects the training, validation, and test datasets to be stored in the directory "torch-points3d/data/minimarket/raw" with the following names:
+
+- "minimarket_train.h5"  for the training dataset
+- "minimarket_valid.h5"  for the validation dataset
+- "minimarket_test.h5"   for the testing dataset
+
+To specify the training, validation, and test set:
+
+Put the already preprocessed HDF5 files located in: https://uoe-my.sharepoint.com/:f:/r/personal/s2739025_ed_ac_uk/Documents/DissertationProject/MiniMarketData?csf=1&web=1&e=sOcolb inside "torch-points3d/data/minimarket/raw", and rename accordingly. These are the processed and ready datasets in HDF5 file format we processed through the pipeline in https://github.com/JorgeIvanJH/Point-Cloud-Segmentation-Benchmarking. They correspond to:
+
+```bash 
+# original Test Scenes with manual ground truth (not compatible):
+all_test_scenes.h5 
+
+# 12000 Training Artificial Segmentation scenes
+ketchup_heinz_400ml_segmentation_numPoints_2048_minObjects_1_maxObjects_10_numrientations_4.h5
+# 1200 Validation Artificial Segmentation scenes
+ketchup_heinz_400ml_segmentation_numPoints_2048_maxObjects_10_orientations_1.h5
+
+# 800 Training Real-Life segmentation scenes
+augmentedscenes[0, 2, 3, 4, 5, 6, 7, 8]_orientations10_downsamplings10_maxpointsinbox100000.h5
+# 100 Validation Real-Life segmentation scenes
+augmentedscenes[1]_orientations10_downsamplings10_maxpointsinbox100000.h5
+# 100 Testing Real-Life segmentation scenes
+augmentedscenes[9]_orientations10_downsamplings10_maxpointsinbox100000.h5
+```
+
+Within "torch-points3d/data/minimarket/raw", change the .h5 file names respectively to: "minimarket_train.h5", "minimarket_valid.h5", or "minimarket_test.h5", according to which of the above is the dataset that you want to use for training, validation, or testing, respectively.
+
+# Experiment Execution
+
+The experiment execution is based on the configuration in "torch-points3d/conf/config.yaml", which calls configurations in subfolders for models, dataset, training, tracking, etc.
+
+## To run the experiments:
+
+Having activated the conda environment, just run:
+
+```bash
+poetry run python torch-points3d/train.py
+```
+
+To change the model implemented, modify in torch-points3d/conf/config.yaml:
+
+```bash
+  - models: segmentation/ppnet # Options: [_/pointnet, _/pointnet2, _/ppnet, _/kpconv, _/rsconv]
+```
+with its respective
+```bash
+model_name: PPNet # Options: [PointNet, pointnet2ms, PPNet, KPConvPaper, RSConv_MSN]
+```
+which points out the specific version (model_name) of the architecture for pointcloud segmentation in (models) located in "torch-points3d/conf/models/segmentation/_____.yaml" 
+
+THE MAIN ADVANTAGE OF THIS PROJECT is the chance of further expanding experimentation on other 5 architectures on top of the 5 presented in the project. These include: pointcnn, pvcnn, randlanet, sparseconv3d, and minkowski_baseline, as found in each of the configuration files at "torch-points3d/conf/models/segmentation".
+
+## Executing Experimentations:
+
+When the whole configuration is defined as desired, run:
+
+```bash
+poetry run python train.py
+```
+
+An api key for WandB (https://wandb.ai/site/) will likely be requested, provide one from your personal account you require online tracking of the training, or set 
+
+```yaml
+wandb:
+  log: False
+```
+
+in "torch-points3d/conf/training/default.yaml" to ignore online tracking.
+
+The resulting metrics, and model weights will be stored in "torch-points3d/outputs", in folders named as YYYY-MM-DD/HH-MM-SS.
+
+
+## Performance Visualizations:
+
+To use the model resulting from one experimentation in particular, ran and whose results are already found in the "torch-points3d/outputs" folder, to test on scenes individually, you will have to head to the "torch-points3d/notebooks" folder, which contains isolated folder for the data and to store individual inferences.
+
+Similar to how the HDF5 files were added as "minimarket_train.h5", "minimarket_valid.h5", or "minimarket_test.h5, you will have to save 3 copies of the same HDF5 files with the 3 names at "torch-points3d/notebooks/data/minimarket/raw". Then check the script at "torch-points3d/notebooks/inference_tests.py", there, specify the path to the checkpoint folder in the "checkpoint_path" variable, and run:
+
+```bash
+python torch-points3d/notebooks/inference_tests.py
+```
+
+That will proces the dataset similarly as in the experiments, make inferences and save the visualizations to "torch-points3d/notebooks/outputs" that were presented in the final report.
+
+
+## Below follows the original README for TorchPoints3D:
+
 <p align="center">
   <img width="40%" src="https://raw.githubusercontent.com/nicolas-chaulet/torch-points3d/master/docs/logo.png" />
 </p>
