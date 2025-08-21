@@ -127,7 +127,7 @@ In my project, I ran multiple experiments both with artificial and real life sce
 
 To specify the training, validation, and test set:
 
-Put the already preprocessed HDF5 files located in: https://uoe-my.sharepoint.com/:f:/r/personal/s2739025_ed_ac_uk/Documents/DissertationProject/MiniMarketData?csf=1&web=1&e=sOcolb inside "torch-points3d/data/minimarket/raw", and rename accordingly. These are the processed and ready datasets in HDF5 file format we processed through the pipeline in https://github.com/JorgeIvanJH/Point-Cloud-Segmentation-Benchmarking. They correspond to:
+Download and place the already preprocessed HDF5 files located in: https://uoe-my.sharepoint.com/:f:/g/personal/s2739025_ed_ac_uk/EoUDFp6VWRhMs-YVGy8GeT4BLGv9cqTyJ_ShE6nAnh9Elg?e=a20Xx4 inside "torch-points3d/data/minimarket/raw", and rename accordingly. These are the processed and ready datasets in HDF5 file format we processed through the pipeline in https://github.com/JorgeIvanJH/Point-Cloud-Segmentation-Benchmarking. They correspond to:
 
 ```bash 
 # original Test Scenes with manual ground truth (not compatible):
